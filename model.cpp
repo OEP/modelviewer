@@ -28,6 +28,14 @@ Face::addCoordinate(CoordId v, CoordId vt, CoordId vn)
     mBuffer.push_back(vn);
 }
 
+void
+Face::getVertex(size_t i, Vertex &x, Vertex &y, Vertex &z) const
+{
+    x = mBuffer[3 * i + 0];
+    y = mBuffer[3 * i + 1];
+    z = mBuffer[3 * i + 2];
+}
+
 static void
 model_read_face(Model *model, std::istream& is)
 {

@@ -2,13 +2,16 @@
 #include <vector>
 #include <istream>
 
+class Model;
+class Face;
+
 typedef float Vertex;
 typedef std::vector<Vertex> VertexBuffer;
 
 typedef ssize_t CoordId;
 typedef std::vector<CoordId> CoordIdBuffer;
+typedef std::vector<Face> FaceBuffer;
 
-class Model;
 
 class Face
 {
@@ -20,6 +23,7 @@ public:
     size_t size() const { return mBuffer.size() / 3; }
 
     void addCoordinate(CoordId v, CoordId vt, CoordId vn);
+    void getVertex(size_t, Vertex&, Vertex&, Vertex&) const;
 
 private:
     const Model* mModel;
@@ -38,11 +42,14 @@ public:
     void addVertexTexture(Vertex x, Vertex y);
     void addFace(const Face& face);
 
+    FaceBuffer::const_iterator begin_faces() const { return mFaces.begin(); }
+    FaceBuffer::const_iterator end_faces() const { return mFaces.end(); }
+
 private:
     Model();
 
     VertexBuffer mVertices;
     VertexBuffer mVertexNormals;
     VertexBuffer mVertexTexture;
-    std::vector<Face> mFaces;
+    FaceBuffer mFaces;
 };
