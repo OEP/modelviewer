@@ -31,9 +31,8 @@ Face::addCoordinate(CoordId v, CoordId vt, CoordId vn)
 void
 Face::getVertex(size_t i, Vertex &x, Vertex &y, Vertex &z) const
 {
-    x = mBuffer[3 * i + 0];
-    y = mBuffer[3 * i + 1];
-    z = mBuffer[3 * i + 2];
+    size_t j = mBuffer[3 * i];
+    mModel->getVertex(j, x, y, z);
 }
 
 static void
@@ -152,4 +151,12 @@ void
 Model::addFace(const Face& face)
 {
     mFaces.push_back(face);
+}
+
+void
+Model::getVertex(ssize_t i, Vertex &x, Vertex &y, Vertex &z) const
+{
+    x = mVertices[i * 3 + 0];
+    y = mVertices[i * 3 + 1];
+    z = mVertices[i * 3 + 2];
 }

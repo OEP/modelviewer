@@ -42,6 +42,8 @@ public:
     void addVertexTexture(Vertex x, Vertex y);
     void addFace(const Face& face);
 
+    void getVertex(ssize_t, Vertex&, Vertex&, Vertex&) const;
+
     FaceBuffer::const_iterator begin_faces() const { return mFaces.begin(); }
     FaceBuffer::const_iterator end_faces() const { return mFaces.end(); }
 
