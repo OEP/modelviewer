@@ -65,7 +65,7 @@ void error(const char* prefix, const char *msg)
 void fail(const char* prefix, const char *msg)
 {
     error(prefix, msg);
-    exit(EXIT_SUCCESS);
+    exit(EXIT_FAILURE);
 }
 
 int main(int argc, char **argv)
