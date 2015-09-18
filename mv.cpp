@@ -20,7 +20,6 @@ struct vector {
 };
 
 Model *g_model;
-
 struct vector g_translate = {0, 0, -2};
 struct vector g_rotate = {0, 0, 0};
 struct vector g_scale = {1, 1, 1};
@@ -29,6 +28,31 @@ struct vector g_last_mouse_pos = {0, 0, 0};
 
 enum CameraState { NONE, TUMBLE, PAN, ZOOM };
 CameraState g_camera_state = NONE;
+
+GLenum g_primitive = GL_POINTS;
+
+void error(const char*, const char*);
+
+void reset_view()
+{
+    g_rotate.x = 0;
+    g_rotate.y = 0;
+    g_rotate.z = 0;
+    g_scale.x = 1;
+    g_scale.y = 1;
+    g_scale.z = 1;
+    g_translate.x = 0;
+    g_translate.y = 0;
+    g_translate.z = -2;
+    g_primitive = GL_POINTS;
+    glutPostRedisplay();
+}
+
+void change_primitive(GLenum primitive)
+{
+    g_primitive = primitive;
+    glutPostRedisplay();
+}
 
 void mouse(int button, int state, int x, int y)
 {
@@ -85,6 +109,48 @@ void passive_motion(int x, int y)
     update_mouse_position(x, y);
 }
 
+void keyboard(unsigned char key, int x, int y)
+{
+    switch(key) {
+        case 'r':
+            reset_view();
+            break;
+        case '1':
+            change_primitive(GL_POINTS);
+            break;
+        case '2':
+            change_primitive(GL_LINES);
+            break;
+        case '3':
+            change_primitive(GL_LINE_STRIP);
+            break;
+        case '4':
+            change_primitive(GL_LINE_LOOP);
+            break;
+        case '5':
+            change_primitive(GL_TRIANGLES);
+            break;
+        case '6':
+            change_primitive(GL_TRIANGLE_STRIP);
+            break;
+        case '7':
+            change_primitive(GL_TRIANGLE_FAN);
+            break;
+        case '8':
+            change_primitive(GL_QUADS);
+            break;
+        case '9':
+            change_primitive(GL_QUAD_STRIP);
+            break;
+        case '0':
+            change_primitive(GL_POLYGON);
+            break;
+        default:
+            error(NULL, "Unhandled key");
+            break;
+    }
+}
+
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -106,16 +172,16 @@ void display()
     glRotatef(g_rotate.z, 0, 0, 1);
     glScalef(g_scale.x, g_scale.y, g_scale.z);
 
-    glBegin(GL_POINTS);
     Vertex x, y, z;
     for(auto it = g_model->begin_faces(); it < g_model->end_faces(); it++) {
         auto &face = *it;
-        for(size_t i = 0; i < 3; i++) {
+        glBegin(g_primitive);
+        for(size_t i = 0; i < face.size(); i++) {
             face.getVertex(i, x, y, z);
             glVertex3f(x, y, z);
         }
+        glEnd();
     }
-    glEnd();
 
     glFlush();
 }
@@ -159,6 +225,7 @@ int main(int argc, char **argv)
     glutReshapeWindow(MV_WIDTH, MV_HEIGHT);
 
     glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard);
     glutMouseFunc(mouse);
     glutMotionFunc(motion);
     glutPassiveMotionFunc(passive_motion);
