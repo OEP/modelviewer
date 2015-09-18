@@ -43,6 +43,9 @@ public:
     void addFace(const Face& face);
 
     void getVertex(ssize_t, Vertex&, Vertex&, Vertex&) const;
+    void getCentroid(Vertex&, Vertex&, Vertex&) const;
+    void getLength(Vertex&, Vertex&, Vertex&) const;
+    size_t size() const { return mVertices.size(); }
 
     FaceBuffer::const_iterator begin_faces() const { return mFaces.begin(); }
     FaceBuffer::const_iterator end_faces() const { return mFaces.end(); }
@@ -54,4 +57,7 @@ private:
     VertexBuffer mVertexNormals;
     VertexBuffer mVertexTexture;
     FaceBuffer mFaces;
+    Vertex mSumX, mSumY, mSumZ;
+    Vertex mMinX, mMinY, mMinZ;
+    Vertex mMaxX, mMaxY, mMaxZ;
 };

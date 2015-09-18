@@ -35,15 +35,20 @@ void error(const char*, const char*);
 
 void reset_view()
 {
+    Vertex x, y, z;
+    Vertex lx, ly, lz;
+    g_model->getCentroid(x, y, z);
+    g_model->getLength(lx, ly, lz);
+
     g_rotate.x = 0;
     g_rotate.y = 0;
     g_rotate.z = 0;
     g_scale.x = 1;
     g_scale.y = 1;
     g_scale.z = 1;
-    g_translate.x = 0;
-    g_translate.y = 0;
-    g_translate.z = -2;
+    g_translate.x = -x;
+    g_translate.y = -y;
+    g_translate.z = -z - 5 * lz;
     g_primitive = GL_POINTS;
     glutPostRedisplay();
 }
@@ -230,6 +235,7 @@ int main(int argc, char **argv)
     glutMotionFunc(motion);
     glutPassiveMotionFunc(passive_motion);
 
+    reset_view();
     glutMainLoop();
 
     return 0;

@@ -69,7 +69,10 @@ model_read_face(Model *model, std::istream& is)
 }
 
 Model::Model():
-    mVertices(), mVertexNormals(), mVertexTexture()
+    mVertices(), mVertexNormals(), mVertexTexture(),
+    mSumX(0), mSumY(0), mSumZ(0),
+    mMinX(0), mMinY(0), mMinZ(0),
+    mMaxX(0), mMaxY(0), mMaxZ(0)
 {
 }
 
@@ -130,6 +133,15 @@ Model::addVertex(Vertex x, Vertex y, Vertex z)
     mVertices.push_back(x);
     mVertices.push_back(y);
     mVertices.push_back(z);
+    mSumX += x;
+    mSumY += y;
+    mSumZ += z;
+    mMinX = std::min(mMinX, x);
+    mMinY = std::min(mMinY, y);
+    mMinZ = std::min(mMinZ, z);
+    mMaxX = std::max(mMaxX, x);
+    mMaxY = std::max(mMaxY, y);
+    mMaxZ = std::max(mMaxZ, z);
 }
 
 void
@@ -159,4 +171,20 @@ Model::getVertex(ssize_t i, Vertex &x, Vertex &y, Vertex &z) const
     x = mVertices[i * 3 + 0];
     y = mVertices[i * 3 + 1];
     z = mVertices[i * 3 + 2];
+}
+
+void
+Model::getCentroid(Vertex &x, Vertex &y, Vertex &z) const
+{
+    x = mSumX / size();
+    y = mSumY / size();
+    z = mSumZ / size();
+}
+
+void
+Model::getLength(Vertex &x, Vertex &y, Vertex &z) const
+{
+    x = mMaxX - mMinX;
+    y = mMaxY - mMinY;
+    z = mMaxZ - mMinZ;
 }
