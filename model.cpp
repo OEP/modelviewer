@@ -56,7 +56,7 @@ model_read_face(Model *model, std::istream& is)
                 coordinates[i] = -1; 
             }
             else {
-                coordinates[i] = boost::lexical_cast<CoordId>(idx);
+                coordinates[i] = boost::lexical_cast<CoordId>(idx) - 1;
             }
             i++;
         }
