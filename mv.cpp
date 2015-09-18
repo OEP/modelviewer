@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <algorithm>
 
 #include <GLUT/glut.h>
 
@@ -14,6 +15,9 @@
 
 #define MV_HEIGHT 480
 #define MV_WIDTH (MV_HEIGHT * MV_ASPECT)
+
+#define MV_WHEEL_DOWN 3
+#define MV_WHEEL_UP 4
 
 struct vector {
     GLfloat x, y, z;
@@ -59,12 +63,35 @@ void change_primitive(GLenum primitive)
     glutPostRedisplay();
 }
 
+void zoom(float amount)
+{
+    g_scale.x = std::max(0.f, g_scale.x + amount);
+    g_scale.y = std::max(0.f, g_scale.y + amount);
+    g_scale.z = std::max(0.f, g_scale.z + amount);
+    glutPostRedisplay();
+}
+
 void mouse(int button, int state, int x, int y)
 {
+    /*
+     * Handle scroll events by zooming.
+     */
+    if(button == MV_WHEEL_UP || button == MV_WHEEL_DOWN) {
+        int sign = button == MV_WHEEL_UP ? 1 : -1;
+        zoom(sign * 0.01);
+        return;
+    }
+
     if(state == GLUT_DOWN && g_camera_state == NONE) {
+        int modifiers = glutGetModifiers();
         switch(button) {
         case GLUT_LEFT_BUTTON:
-            g_camera_state = TUMBLE;
+            if(modifiers & GLUT_ACTIVE_CTRL) {
+                g_camera_state = PAN;
+            }
+            else {
+                g_camera_state = TUMBLE;
+            }
             break;
         default:
             break;
@@ -80,7 +107,12 @@ void mouse(int button, int state, int x, int y)
         return;
     }
 
-    if(g_camera_state == TUMBLE && button == GLUT_LEFT_BUTTON) {
+    if(
+        button == GLUT_LEFT_BUTTON  && (
+            g_camera_state == TUMBLE ||
+            g_camera_state == PAN
+        )
+    ) {
         g_camera_state = NONE;
     }
 }
@@ -102,6 +134,10 @@ void motion(int x, int y)
         glutPostRedisplay();
         break;
     case PAN:
+        g_translate.x += 0.001 * dx;
+        g_translate.y -= 0.001 * dy;
+        glutPostRedisplay();
+        break;
     case ZOOM:
     case NONE:
         break;
